@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../.resources/report.css" type="text/css"/><link rel="shortcut icon" href="../.resources/report.gif" type="image/gif"/><title>AttackHandler.java</title><link rel="stylesheet" href="../.resources/prettify.css" type="text/css"/><script type="text/javascript" src="../.resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../.sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Warrior</a> &gt; <a href="index.source.html" class="el_package">org.com.game.controller</a> &gt; <span class="el_source">AttackHandler.java</span></div><h1>AttackHandler.java</h1><pre class="source lang-java linenums">package org.com.game.controller;
+
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Random;
+
+import org.com.character.Character;
+import org.com.character.CharacterBodyPart;
+import org.com.character.CharacterStatus;
+import org.com.character.CharacterType;
+
+<span class="nc" id="L12">public class AttackHandler {</span>
+
+<span class="fc" id="L14">	public static final Random RANDOM = new Random();</span>
+
+<span class="fc" id="L16">	private static Map&lt;CharacterBodyPart, Integer&gt; characterBodyPartAndHealthImpact = new HashMap&lt;&gt;();</span>
+
+	static {
+<span class="fc" id="L19">		characterBodyPartAndHealthImpact.put(CharacterBodyPart.Legs, 5);</span>
+<span class="fc" id="L20">		characterBodyPartAndHealthImpact.put(CharacterBodyPart.Arms, 10);</span>
+<span class="fc" id="L21">		characterBodyPartAndHealthImpact.put(CharacterBodyPart.Head, 15);</span>
+<span class="fc" id="L22">		characterBodyPartAndHealthImpact.put(CharacterBodyPart.Heart, 25);</span>
+<span class="fc" id="L23">	}</span>
+
+	public static String attack(Character attackedBy, Character attackedTo) {
+
+<span class="fc" id="L27">		StringBuilder messageBuilder = null;</span>
+<span class="fc" id="L28">		int characterMinimumAttackingPower = attackedBy.getAttackingMinPower();</span>
+<span class="fc" id="L29">		int characterMaximumAttackingPower = attackedBy.getAttackingMaxPower();</span>
+<span class="fc" id="L30">		int characterAttackingPower = getAttackingPower(characterMinimumAttackingPower, characterMaximumAttackingPower);</span>
+<span class="fc" id="L31">		int weaponDamagingEffect = attackedBy.getWeapon().getDamageEffect();</span>
+<span class="fc" id="L32">		CharacterBodyPart bodyPartHitted = CharacterBodyPart.values()[new Random()</span>
+<span class="fc" id="L33">				.nextInt(CharacterBodyPart.values().length)];</span>
+
+<span class="fc" id="L35">		int bodyPartHittedImpact = characterBodyPartAndHealthImpact.get(bodyPartHitted);</span>
+<span class="fc" id="L36">		int damageEffect = characterAttackingPower + weaponDamagingEffect * attackedBy.getExperience()</span>
+				+ bodyPartHittedImpact;
+<span class="pc bpc" id="L38" title="1 of 2 branches missed.">		damageEffect = damageEffect &gt; 100 ? 100 : damageEffect;</span>
+<span class="fc" id="L39">		messageBuilder = new StringBuilder(attackedBy.getName()).append(&quot; Attack on &quot;);</span>
+<span class="fc" id="L40">		attackedTo.setHealth(attackedTo.getHealth() - damageEffect);</span>
+
+<span class="pc bpc" id="L42" title="1 of 2 branches missed.">		if (attackedTo.getHealth() &lt;= 0) {</span>
+<span class="nc" id="L43">			attackedTo.setCharacterStatus(CharacterStatus.dead);</span>
+<span class="nc" id="L44">			attackedTo.setHealth(0);</span>
+		}
+<span class="fc" id="L46">		messageBuilder.append(attackedTo.getName()).append(&quot;'s &quot;).append(bodyPartHitted.toString());</span>
+
+<span class="fc" id="L48">		messageBuilder.append(&quot; and gave &quot;).append(damageEffect).append(&quot; damages &quot;);</span>
+
+<span class="fc" id="L50">		return messageBuilder.toString();</span>
+	}
+
+	private static int getAttackingPower(int minPower, int maxPower) {
+
+<span class="fc" id="L55">		int number = RANDOM.nextInt(maxPower - minPower) + minPower;</span>
+<span class="fc" id="L56">		return number;</span>
+	}
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.eclemma.org/jacoco">JaCoCo</a> 0.7.5.201505241946</span></div></body></html>

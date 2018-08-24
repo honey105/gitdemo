@@ -1,0 +1,393 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../.resources/report.css" type="text/css"/><link rel="shortcut icon" href="../.resources/report.gif" type="image/gif"/><title>GameController.java</title><link rel="stylesheet" href="../.resources/prettify.css" type="text/css"/><script type="text/javascript" src="../.resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../.sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Warrior</a> &gt; <a href="index.source.html" class="el_package">org.com.game.controller</a> &gt; <span class="el_source">GameController.java</span></div><h1>GameController.java</h1><pre class="source lang-java linenums">package org.com.game.controller;
+
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Random;
+
+import org.com.character.Character;
+import org.com.character.CharacterFactory;
+import org.com.character.CharacterType;
+import org.com.command.CommandResult;
+import org.com.command.CommandStatus;
+import org.com.game.state.GameLevel;
+import org.com.game.state.GameState;
+import org.com.weapon.Weapon;
+import org.com.weapon.WeaponFactory;
+import org.com.weapon.WeaponType;
+
+/**
+ * This class is the heart of shooting game. It actually update the Game state
+ * depending upon the action. It is central controller and hold the business
+ * logics.
+ * 
+ * @author ashokkumar01
+ *
+ */
+public class GameController {
+
+	private GameState gameState;
+
+<span class="fc" id="L37">	private final String gameStateFileName = &quot;gameState.txt&quot;;</span>
+
+<span class="fc" id="L39">	private boolean newGameLoaded = false;</span>
+
+<span class="fc" id="L41">	public static final Random RANDOM = new Random();</span>
+
+<span class="fc" id="L43">	public GameController() {</span>
+<span class="fc" id="L44">	}</span>
+
+	public CommandResult launchNewGame() {
+<span class="fc" id="L47">		this.gameState = new GameState();</span>
+<span class="fc" id="L48">		this.gameState.setGameLevel(GameLevel.First);</span>
+<span class="fc" id="L49">		this.gameState.setUnlockedWeapons(new ArrayList&lt;&gt;());</span>
+<span class="fc" id="L50">		this.newGameLoaded = true;</span>
+<span class="fc" id="L51">		return new CommandResult(CommandStatus.Success, &quot;New Game Launched Successfully&quot;);</span>
+	}
+
+	/**
+	 * This method create a new character and set the default weapon as 'sword'
+	 * to player.
+	 * 
+	 * @param characterName
+	 * @return
+	 */
+	public CommandResult createCharacter(String characterName) {
+<span class="fc" id="L62">		Character warrior = CharacterFactory.createCharacter(CharacterType.Warrior);</span>
+<span class="fc" id="L63">		warrior.setName(characterName);</span>
+<span class="fc" id="L64">		Weapon sword = WeaponFactory.createWeapon(WeaponType.Sword);</span>
+<span class="fc" id="L65">		warrior.setWeapon(sword);</span>
+<span class="fc" id="L66">		gameState.setMainCharacter(warrior);</span>
+<span class="fc" id="L67">		StringBuilder messageBuilder = new StringBuilder(getMainCharacterInformation());</span>
+<span class="fc" id="L68">		return new CommandResult(CommandStatus.Success, messageBuilder.toString());</span>
+
+	}
+
+	/**
+	 * This method creates enemy and give min/max power depending upon the game
+	 * level.
+	 * 
+	 * @return
+	 */
+	public CommandResult createEnemy() {
+
+<span class="fc" id="L80">		String message = null;</span>
+<span class="pc bpc" id="L81" title="2 of 6 branches missed.">		if ((newGameLoaded || this.gameState.getEnemy() == null || this.gameState.getEnemy().getHealth() &lt;= 0)) {</span>
+<span class="fc" id="L82">			Character enemy = CharacterFactory.createCharacter(CharacterType.Enemy);</span>
+<span class="fc" id="L83">			Weapon enemyWeapon = null;</span>
+
+<span class="fc" id="L85">			int enemyMinAttackingPower = 0;</span>
+<span class="fc" id="L86">			int enemyMaxAttackingPower = 0;</span>
+
+<span class="fc bfc" id="L88" title="All 2 branches covered.">			if (gameState.getGameLevel() == GameLevel.First) {</span>
+<span class="fc" id="L89">				enemyMinAttackingPower = RANDOM.nextInt(1) + 1;</span>
+<span class="fc" id="L90">				enemyMaxAttackingPower = RANDOM.nextInt(3) + 3;</span>
+<span class="fc" id="L91">				enemyWeapon = WeaponFactory.createWeapon(WeaponType.Knife);</span>
+<span class="pc bpc" id="L92" title="1 of 2 branches missed.">			} else if (gameState.getGameLevel() == GameLevel.Second) {</span>
+<span class="fc" id="L93">				enemyMinAttackingPower = RANDOM.nextInt(1) + 1;</span>
+<span class="fc" id="L94">				enemyMaxAttackingPower = RANDOM.nextInt(4) + 3;</span>
+<span class="fc" id="L95">				enemyWeapon = WeaponFactory.createWeapon(WeaponType.Sword);</span>
+			}
+
+<span class="fc" id="L98">			enemy.setAttackingMinPower(enemyMinAttackingPower);</span>
+<span class="fc" id="L99">			enemy.setAttackingMaxPower(enemyMaxAttackingPower);</span>
+<span class="fc" id="L100">			enemy.setWeapon(enemyWeapon);</span>
+<span class="fc" id="L101">			enemy.setName(&quot;Goblin&quot;);</span>
+<span class="fc" id="L102">			gameState.setEnemy(enemy);</span>
+<span class="fc" id="L103">			message = &quot;Enemy Created Successfully..&quot;;</span>
+		}
+<span class="fc" id="L105">		return new CommandResult(CommandStatus.Success, message);</span>
+	}
+
+	/**
+	 * This method return enemy information.
+	 * 
+	 * @return
+	 */
+	public String getEnemyInformation() {
+<span class="fc" id="L114">		StringBuilder strBuilder = new StringBuilder(&quot; Goblin Attacking Max Power : &quot;)</span>
+<span class="fc" id="L115">				.append(gameState.getEnemy().getAttackingMaxPower()).append(&quot;\n Weapon : &quot;)</span>
+<span class="fc" id="L116">				.append(gameState.getEnemy().getWeapon().getWeaponName());</span>
+
+<span class="fc" id="L118">		return strBuilder.toString();</span>
+	}
+
+	/**
+	 * This method replace main character weapon to more powerful weapon which
+	 * player unlocked during play.
+	 * 
+	 * @return
+	 */
+	public CommandResult replaceWeapon() {
+<span class="fc" id="L128">		Weapon unlockedWeapon = getUnlockedWeapons().get(0);</span>
+<span class="fc" id="L129">		gameState.getMainCharacter().setWeapon(unlockedWeapon);</span>
+<span class="fc" id="L130">		gameState.getUnlockedWeapons().clear();</span>
+
+<span class="fc" id="L132">		StringBuilder strBuilder = new StringBuilder(&quot;Your Obtained new weapon, You now have &quot;)</span>
+<span class="fc" id="L133">				.append(this.gameState.getMainCharacter().getWeapon().getWeaponName());</span>
+<span class="fc" id="L134">		return new CommandResult(CommandStatus.Success, strBuilder.toString());</span>
+	}
+
+	private void unlockedNewWeapon() {
+<span class="fc" id="L138">		getUnlockedWeapons().clear();</span>
+<span class="fc" id="L139">		getUnlockedWeapons().add(WeaponFactory.createWeapon(WeaponType.BowAndArrow));</span>
+<span class="fc" id="L140">	}</span>
+
+	/**
+	 * This method invoked when player and enemy attack on each other. Actual
+	 * damage effect will be calculated by another class named as AttackHandler.
+	 * 
+	 * @return
+	 */
+	public CommandResult attack() {
+
+<span class="fc" id="L150">		String playerMessage = playerAttacked();</span>
+<span class="fc" id="L151">		StringBuilder messageBuilder = new StringBuilder(playerMessage).append(&quot;\n&quot;);</span>
+
+<span class="fc bfc" id="L153" title="All 2 branches covered.">		if (!this.gameState.getEnemy().isDead()) {</span>
+<span class="fc" id="L154">			String enemyMessage = enemyAttacked();</span>
+<span class="fc" id="L155">			messageBuilder.append(enemyMessage).append(&quot;\n&quot;);</span>
+		}
+<span class="pc bpc" id="L157" title="1 of 4 branches missed.">		if (this.gameState.getEnemy().isDead() &amp;&amp; !this.gameState.getMainCharacter().isDead()) {</span>
+			// Enemy is dead and player is live
+<span class="fc" id="L159">			unlockedNewWeapon();</span>
+<span class="fc" id="L160">			increaseEnemyCount();</span>
+<span class="fc" id="L161">			addExperience();</span>
+<span class="fc" id="L162">			addHealthBoostingLiquid();</span>
+
+<span class="pc bpc" id="L164" title="1 of 2 branches missed.">			if (gameState.getMainCharacter().getExperience() &gt; 4) {</span>
+<span class="nc" id="L165">				gameState.setGameLevel(GameLevel.Second);</span>
+			}
+
+		}
+
+<span class="fc" id="L170">		return new CommandResult(CommandStatus.Success, messageBuilder.toString());</span>
+	}
+
+	private String playerAttacked() {
+
+<span class="fc" id="L175">		boolean hit = RANDOM.nextBoolean();</span>
+<span class="fc" id="L176">		String message = null;</span>
+
+<span class="pc bpc" id="L178" title="1 of 2 branches missed.">		if (hit) {</span>
+<span class="fc" id="L179">			message = AttackHandler.attack(gameState.getMainCharacter(), gameState.getEnemy());</span>
+		} else {
+<span class="nc" id="L181">			message = &quot;Ops.... You missed the attack&quot;;</span>
+		}
+<span class="fc" id="L183">		return message;</span>
+	}
+
+	private String enemyAttacked() {
+<span class="fc" id="L187">		boolean hit = RANDOM.nextBoolean();</span>
+<span class="fc" id="L188">		String message = null;</span>
+
+<span class="pc bpc" id="L190" title="1 of 2 branches missed.">		if (hit) {</span>
+<span class="nc" id="L191">			message = AttackHandler.attack(gameState.getEnemy(), gameState.getMainCharacter());</span>
+		} else {
+<span class="fc" id="L193">			message = &quot;Enemy missed the attack&quot;;</span>
+		}
+
+<span class="fc" id="L196">		return message;</span>
+	}
+
+	/**
+	 * This method returns player information.
+	 * 
+	 * @return
+	 */
+	public String getMainCharacterInformation() {
+<span class="fc" id="L205">		StringBuilder strBuilder = new StringBuilder();</span>
+<span class="fc" id="L206">		Character mainCharater = gameState.getMainCharacter();</span>
+<span class="fc" id="L207">		strBuilder.append(&quot;\nHello &quot;).append(mainCharater.getName()).append(&quot;,\nYour stats :- &quot;).append(&quot;\n Weapon : &quot;)</span>
+<span class="fc" id="L208">				.append(mainCharater.getWeapon().getWeaponName()).append(&quot;\n Health points : &quot;)</span>
+<span class="fc" id="L209">				.append(mainCharater.getHealth()).append(&quot;\n Max Combat power : &quot;)</span>
+<span class="fc" id="L210">				.append(mainCharater.getAttackingMaxPower()).append(&quot;\n Enemies Terminated : &quot;)</span>
+<span class="fc" id="L211">				.append(getKilledEnemiesCount()).append(&quot;\n Experience Level : &quot;).append(getGameLevel());</span>
+
+<span class="fc" id="L213">		return strBuilder.toString();</span>
+
+	}
+
+	public int getKilledEnemiesCount() {
+<span class="fc" id="L218">		return this.gameState.getEnemiesKilledCount();</span>
+	}
+
+	public List&lt;Weapon&gt; getUnlockedWeapons() {
+<span class="fc" id="L222">		return gameState.getUnlockedWeapons();</span>
+	}
+
+	public String createExploreAreaDialogs() {
+
+<span class="fc" id="L227">		Character character = gameState.getMainCharacter();</span>
+<span class="fc" id="L228">		StringBuilder dialogBuilder = new StringBuilder(&quot;Mission Master: Hello &quot;).append(character.getName())</span>
+<span class="fc" id="L229">				.append(&quot;\nI am your Mission Master. \nHere is your map of Crime City Harbour.&quot;)</span>
+<span class="fc" id="L230">				.append(&quot;\nOn your [ East ], you will find the Weapon Factory where you can upgrade your weapons on collecting enough points after killing the enemies.&quot;)</span>
+<span class="fc" id="L231">				.append(&quot;\nOn your [ West ], you will see the Elixir station, where you can rest and rejuvenate your health points.&quot;)</span>
+<span class="fc" id="L232">				.append(&quot;\nKeep in mind that you may or may not get a pod to rest in depending on their availability.&quot;)</span>
+<span class="fc" id="L233">				.append(&quot;\nStraight ahead of you is a wide street that leads inside the Crime City. Go and get them.... \nALL the best for your mission&quot;);</span>
+
+<span class="fc" id="L235">		return dialogBuilder.toString();</span>
+
+	}
+
+	public String searchHealthBoostingElixir() {
+<span class="fc" id="L240">		StringBuilder messageBuilder = new StringBuilder();</span>
+
+<span class="pc bpc" id="L242" title="1 of 2 branches missed.">		if (this.gameState.getHealthBoostingElixir() &gt; 0) {</span>
+
+<span class="pc bpc" id="L244" title="1 of 2 branches missed.">			if (this.gameState.getMainCharacter().getHealth() == 100) {</span>
+<span class="nc" id="L245">				messageBuilder.append(&quot;\nYou do not need the Elixir now, as your health is 100.&quot;);</span>
+<span class="pc bpc" id="L246" title="1 of 2 branches missed.">			} else if (this.gameState.getMainCharacter().getHealth() &lt; 100) {</span>
+<span class="fc" id="L247">				int difference = 100 - this.gameState.getMainCharacter().getHealth();</span>
+
+<span class="pc bpc" id="L249" title="1 of 2 branches missed.">				if (difference &gt;= this.gameState.getHealthBoostingElixir()) {</span>
+<span class="fc" id="L250">					this.gameState.getMainCharacter().setHealth(</span>
+<span class="fc" id="L251">							this.gameState.getMainCharacter().getHealth() + this.gameState.getHealthBoostingElixir());</span>
+				} else {
+<span class="nc" id="L253">					this.gameState.getMainCharacter().setHealth(100);</span>
+				}
+
+<span class="fc" id="L256">				messageBuilder.append(</span>
+<span class="fc" id="L257">						&quot;\nYou have the Elixir and your health is : &quot; + this.gameState.getMainCharacter().getHealth());</span>
+<span class="fc" id="L258">				this.gameState.setHealthBoostingElixir(0);</span>
+
+<span class="fc" id="L260">			}</span>
+		} else {
+<span class="nc" id="L262">			messageBuilder.append(&quot;\nSorry... No Elixir available right now...&quot;);</span>
+		}
+
+<span class="fc" id="L265">		return messageBuilder.toString();</span>
+	}
+
+	/**
+	 * This method saved the current game state when invoked.
+	 * 
+	 * @return
+	 */
+	public CommandResult saveGameState() {
+
+		CommandResult result;
+
+		try {
+
+<span class="fc" id="L279">			FileOutputStream fos = new FileOutputStream(new File(gameStateFileName));</span>
+<span class="fc" id="L280">			ObjectOutputStream oos = new ObjectOutputStream(fos);</span>
+<span class="fc" id="L281">			oos.writeObject(this.gameState);</span>
+<span class="fc" id="L282">			result = new CommandResult(CommandStatus.Success, &quot;Game State saved successfully..&quot;);</span>
+<span class="fc" id="L283">			oos.close();</span>
+<span class="fc" id="L284">			fos.close();</span>
+<span class="nc" id="L285">		} catch (FileNotFoundException e) {</span>
+<span class="nc" id="L286">			result = new CommandResult(CommandStatus.Success, &quot;Unable to create game state..&quot;);</span>
+			// e.printStackTrace();
+<span class="nc" id="L288">		} catch (IOException ioException) {</span>
+<span class="nc" id="L289">			result = new CommandResult(CommandStatus.Success, &quot;There is some technical issue occured...&quot;);</span>
+			// ioException.printStackTrace();
+<span class="pc" id="L291">		}</span>
+
+<span class="fc" id="L293">		return result;</span>
+	}
+
+	public String getCurrentStateInformation() {
+<span class="fc" id="L297">		Character mainCharacter = this.gameState.getMainCharacter();</span>
+<span class="fc" id="L298">		StringBuilder messageBuilder = new StringBuilder(&quot;\t Game Level :&quot;)</span>
+<span class="fc" id="L299">				.append(this.gameState.getGameLevel().toString()).append(&quot;\n\t Player Name : &quot;)</span>
+<span class="fc" id="L300">				.append(mainCharacter.getName()).append(&quot;\n\t Player's Weapon : &quot;)</span>
+<span class="fc" id="L301">				.append(mainCharacter.getWeapon().getWeaponName()).append(&quot;\n\t Player Health :&quot;)</span>
+<span class="fc" id="L302">				.append(mainCharacter.getHealth()).append(&quot;\n\t Total Enemies killed yet : &quot;)</span>
+<span class="fc" id="L303">				.append(this.gameState.getEnemiesKilledCount()).append(&quot;\n\t Total experience : &quot;)</span>
+<span class="fc" id="L304">				.append(mainCharacter.getExperience());</span>
+
+<span class="fc" id="L306">		return messageBuilder.toString();</span>
+	}
+
+	/**
+	 * This method is responsible for loading existing game
+	 * @return
+	 */
+	public CommandResult loadExistingGame() {
+
+<span class="fc" id="L315">		CommandResult result = null;</span>
+		try {
+<span class="fc" id="L317">			FileInputStream fi = new FileInputStream(new File(gameStateFileName));</span>
+<span class="fc" id="L318">			ObjectInputStream oi = new ObjectInputStream(fi);</span>
+<span class="fc" id="L319">			this.gameState = (GameState) oi.readObject();</span>
+<span class="fc" id="L320">			newGameLoaded = false;</span>
+<span class="fc" id="L321">			oi.close();</span>
+<span class="fc" id="L322">			fi.close();</span>
+<span class="fc" id="L323">			result = new CommandResult(CommandStatus.Success, &quot;Game Loaded Successfully&quot;);</span>
+<span class="fc" id="L324">			return result;</span>
+<span class="nc" id="L325">		} catch (FileNotFoundException e) {</span>
+			// e.printStackTrace();
+<span class="nc" id="L327">			result = new CommandResult(CommandStatus.Failure, &quot;******* No Game State saved yet. *******&quot;);</span>
+<span class="nc" id="L328">		} catch (IOException ioException) {</span>
+			// ioException.printStackTrace();
+<span class="nc" id="L330">			result = new CommandResult(CommandStatus.Error, &quot;******* There is some technical issue. *******&quot;);</span>
+<span class="nc" id="L331">		} catch (ClassNotFoundException cnf) {</span>
+			// cnf.printStackTrace();
+<span class="nc" id="L333">			result = new CommandResult(CommandStatus.Error, &quot;******* There is some technical issue. *******&quot;);</span>
+<span class="nc" id="L334">		}</span>
+
+<span class="nc" id="L336">		return result;</span>
+
+	}
+
+	public void setGameState(GameState gs) {
+<span class="fc" id="L341">		this.gameState = gs;</span>
+<span class="fc" id="L342">	}</span>
+
+	private void increaseEnemyCount() {
+<span class="fc" id="L345">		this.gameState.setEnemiesKilledCount(this.gameState.getEnemiesKilledCount() + 1);</span>
+<span class="fc" id="L346">	}</span>
+
+	private void addExperience() {
+<span class="fc" id="L349">		this.gameState.getMainCharacter().setExperience(this.gameState.getMainCharacter().getExperience() + 1);</span>
+<span class="fc" id="L350">	}</span>
+
+	private void addHealthBoostingLiquid() {
+<span class="fc" id="L353">		this.gameState.setHealthBoostingElixir(RANDOM.nextInt(9) + 20);</span>
+<span class="fc" id="L354">	}</span>
+
+	public int getMainCharacterHealth() {
+<span class="nc" id="L357">		return this.gameState.getMainCharacter().getHealth();</span>
+	}
+
+	public int getMainCharacterExperience() {
+<span class="nc" id="L361">		return this.gameState.getMainCharacter().getExperience();</span>
+	}
+
+	public int getEnemyHealth() {
+<span class="nc" id="L365">		return this.gameState.getEnemy().getHealth();</span>
+	}
+
+	public String getMainCharacterName() {
+
+<span class="fc" id="L370">		return this.gameState.getMainCharacter().getName();</span>
+	}
+
+	public String getEnemyName() {
+<span class="nc" id="L374">		return this.gameState.getEnemy().getName();</span>
+	}
+
+	public String getGameLevel() {
+<span class="fc" id="L378">		return this.gameState.getGameLevel().getLevelName();</span>
+	}
+
+	public boolean isPlayerDead() {
+<span class="nc" id="L382">		return this.gameState.getMainCharacter().isDead();</span>
+	}
+
+	public boolean isEnemyDead() {
+<span class="nc" id="L386">		return this.gameState.getEnemy().isDead();</span>
+	}
+
+	public void startFirstLevel() {
+<span class="nc" id="L390">		System.out.println(&quot;Start First Level..&quot;);</span>
+<span class="nc" id="L391">	}</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.eclemma.org/jacoco">JaCoCo</a> 0.7.5.201505241946</span></div></body></html>

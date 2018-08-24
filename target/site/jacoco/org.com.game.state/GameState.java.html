@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../.resources/report.css" type="text/css"/><link rel="shortcut icon" href="../.resources/report.gif" type="image/gif"/><title>GameState.java</title><link rel="stylesheet" href="../.resources/prettify.css" type="text/css"/><script type="text/javascript" src="../.resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../.sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Warrior</a> &gt; <a href="index.source.html" class="el_package">org.com.game.state</a> &gt; <span class="el_source">GameState.java</span></div><h1>GameState.java</h1><pre class="source lang-java linenums">package org.com.game.state;
+
+import java.io.Serializable;
+import java.util.List;
+
+import org.com.character.Character;
+import org.com.weapon.Weapon;
+
+<span class="fc" id="L9">public class GameState implements Serializable {</span>
+
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
+	private GameLevel gameLevel;
+	private Character mainCharacter;
+	private Character enemy;
+	private int enemiesKilledCount;
+	private List&lt;Weapon&gt; unlockedWeapons;
+	
+	private int healthBoostingElixir;
+
+	public Character getMainCharacter() {
+<span class="fc" id="L25">		return mainCharacter;</span>
+	}
+
+	public void setMainCharacter(Character mainCharacter) {
+<span class="fc" id="L29">		this.mainCharacter = mainCharacter;</span>
+<span class="fc" id="L30">	}</span>
+
+	public Character getEnemy() {
+<span class="fc" id="L33">		return enemy;</span>
+	}
+
+	public void setEnemy(Character enemy) {
+<span class="fc" id="L37">		this.enemy = enemy;</span>
+<span class="fc" id="L38">	}</span>
+
+	public GameLevel getGameLevel() {
+<span class="fc" id="L41">		return gameLevel;</span>
+	}
+
+	public void setGameLevel(GameLevel gameLevel) {
+<span class="fc" id="L45">		this.gameLevel = gameLevel;</span>
+<span class="fc" id="L46">	}</span>
+
+	public int getEnemiesKilledCount() {
+<span class="fc" id="L49">		return enemiesKilledCount;</span>
+	}
+
+	public void setEnemiesKilledCount(int enemiesKilledCount) {
+<span class="fc" id="L53">		this.enemiesKilledCount = enemiesKilledCount;</span>
+<span class="fc" id="L54">	}</span>
+
+	public List&lt;Weapon&gt; getUnlockedWeapons() {
+<span class="fc" id="L57">		return unlockedWeapons;</span>
+	}
+
+	public void setUnlockedWeapons(List&lt;Weapon&gt; unlockedWeapons) {
+<span class="fc" id="L61">		this.unlockedWeapons = unlockedWeapons;</span>
+<span class="fc" id="L62">	}</span>
+
+	public int getHealthBoostingElixir() {
+<span class="fc" id="L65">		return healthBoostingElixir;</span>
+	}
+
+	public void setHealthBoostingElixir(int healthBoostingElixir) {
+<span class="fc" id="L69">		this.healthBoostingElixir = healthBoostingElixir;</span>
+<span class="fc" id="L70">	}</span>
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.eclemma.org/jacoco">JaCoCo</a> 0.7.5.201505241946</span></div></body></html>

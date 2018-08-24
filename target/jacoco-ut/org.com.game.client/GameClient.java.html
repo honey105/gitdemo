@@ -1,0 +1,396 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../.resources/report.css" type="text/css"/><link rel="shortcut icon" href="../.resources/report.gif" type="image/gif"/><title>GameClient.java</title><link rel="stylesheet" href="../.resources/prettify.css" type="text/css"/><script type="text/javascript" src="../.resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../.sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Warrior</a> &gt; <a href="index.source.html" class="el_package">org.com.game.client</a> &gt; <span class="el_source">GameClient.java</span></div><h1>GameClient.java</h1><pre class="source lang-java linenums">package org.com.game.client;
+
+import java.util.Scanner;
+
+import org.com.command.AttackCommand;
+import org.com.command.Command;
+import org.com.command.CommandResult;
+import org.com.command.CommandStatus;
+import org.com.command.CreateCharacterCommand;
+import org.com.command.CreateEnemyCommand;
+import org.com.command.GameCommandExecuter;
+import org.com.command.LaunchNewGameCommand;
+import org.com.command.LoadExistingGameCommand;
+import org.com.command.ReplaceWeaponCommand;
+import org.com.command.SaveGameStateCommand;
+import org.com.game.controller.GameController;
+import org.com.game.controller.MenuController;
+import org.com.weapon.Weapon;
+
+/**
+ * This is the Game Client and it is responsible for taking input from user and
+ * send commands to Game Controller to perform actions depending upon the user
+ * selection. This is also responsible for displaying messages to user.
+ * 
+ * This is the main class to start the game.
+ * 
+ * @author ashokkumar01
+ *
+ */
+<span class="nc" id="L30">public class GameClient {</span>
+
+	private GameController gameController;
+	private GameCommandExecuter commandExecuter;
+<span class="nc" id="L34">	public static final Scanner USERINPUT = new Scanner(System.in);</span>
+<span class="nc" id="L35">	public static final Scanner ENTERSCANNER = new Scanner(System.in);</span>
+
+	public static final String DASHED_LINE = &quot;\n----------------------------------------------------------------------------------------------------------------------&quot;;
+
+	public static void main(String args[]) {
+
+<span class="nc" id="L41">		System.out.println(DASHED_LINE);</span>
+<span class="nc" id="L42">		System.out.println(</span>
+				&quot;\t\t\tHello Agent, Welcome to Bureau of Crime Investigation.\nYou have been chosen for a covert mission. Should you choose to accept it? \nYour mission is to visit Crime City, a small city situated next to Gringo river, exterminate the enemies and save civilian lives.\nYou will be guided by our Mission Master, who will also provide you with a Map of the city. \nDo keep in mind, if you are caught, the Bureau will deny any association with you whatsoever.&quot;);
+<span class="nc" id="L44">		System.out.println(DASHED_LINE);</span>
+<span class="nc" id="L45">		System.out.println(&quot;\n\t\t\t We wish you luck for your mission.&quot;);</span>
+<span class="nc" id="L46">		System.out.println(DASHED_LINE);</span>
+<span class="nc" id="L47">		GameClient gameClient = new GameClient();</span>
+<span class="nc" id="L48">		gameClient.initilizeGame();</span>
+<span class="nc" id="L49">	}</span>
+
+	public void initilizeGame() {
+<span class="nc" id="L52">		gameController = new GameController();</span>
+<span class="nc" id="L53">		commandExecuter = new GameCommandExecuter();</span>
+<span class="nc" id="L54">		displayMainMenu();</span>
+<span class="nc" id="L55">	}</span>
+
+	private void displayMainMenu() {
+		do {
+<span class="nc" id="L59">			MenuController.renderMenuItems(MenuController.mainMenuItems);</span>
+<span class="nc" id="L60">			String userAction = USERINPUT.nextLine();</span>
+
+<span class="nc bnc" id="L62" title="All 14 branches missed.">			switch (userAction) {</span>
+
+			case &quot;1&quot;: {
+<span class="nc" id="L65">				Command launchNewGame = new LaunchNewGameCommand(gameController);</span>
+<span class="nc" id="L66">				commandExecuter.executeCommand(launchNewGame);</span>
+<span class="nc" id="L67">				printSingleCharacterWithDelay(&quot;Launching.....................&quot;, 100);</span>
+<span class="nc" id="L68">				System.out.println(&quot;\n&quot; + launchNewGame.getCommandResult().getMessage());</span>
+<span class="nc" id="L69">				System.out.println(DASHED_LINE);</span>
+<span class="nc" id="L70">				displayCreateCharacterMenu();</span>
+<span class="nc" id="L71">				break;</span>
+
+			}
+			case &quot;2&quot;: {
+<span class="nc" id="L75">				Command loadExistingGameCmd = new LoadExistingGameCommand(gameController);</span>
+<span class="nc" id="L76">				commandExecuter.executeCommand(loadExistingGameCmd);</span>
+
+<span class="nc" id="L78">				CommandResult commandResult = loadExistingGameCmd.getCommandResult();</span>
+
+<span class="nc bnc" id="L80" title="All 2 branches missed.">				if (CommandStatus.Success == commandResult.getCommandStatus()) {</span>
+<span class="nc" id="L81">					printSingleCharacterWithDelay(&quot;......................&quot;, 100);</span>
+<span class="nc" id="L82">					System.out.println(&quot;\n&quot; + commandResult.getMessage());</span>
+<span class="nc" id="L83">					System.out.println(gameController.getCurrentStateInformation());</span>
+<span class="nc" id="L84">					System.out.println(DASHED_LINE);</span>
+<span class="nc" id="L85">					displayMissionMenuItems();</span>
+<span class="nc bnc" id="L86" title="All 2 branches missed.">				} else if (CommandStatus.Failure == commandResult.getCommandStatus()) {</span>
+<span class="nc" id="L87">					System.out.println(commandResult.getMessage());</span>
+<span class="nc bnc" id="L88" title="All 2 branches missed.">				} else if (CommandStatus.Error == commandResult.getCommandStatus()) {</span>
+<span class="nc" id="L89">					System.out.println(commandResult.getMessage());</span>
+				}
+				break;
+			}
+
+			case &quot;3&quot;: {
+<span class="nc" id="L95">				System.out.println(&quot;Bye Bye.. See you next time.... :)&quot;);</span>
+<span class="nc" id="L96">				System.exit(0);</span>
+			}
+			default: {
+<span class="nc" id="L99">				System.out.println(&quot;Please choose valid option..&quot;);</span>
+			}
+			}
+<span class="nc" id="L102">		} while (true);</span>
+	}
+
+	private void displayCreateCharacterMenu() {
+<span class="nc" id="L106">		boolean goBack = false;</span>
+		do {
+
+<span class="nc" id="L109">			MenuController.renderMenuItems(MenuController.createCharacterMenuItems);</span>
+<span class="nc" id="L110">			String userAction = USERINPUT.nextLine();</span>
+
+<span class="nc bnc" id="L112" title="All 10 branches missed.">			switch (userAction) {</span>
+
+			case &quot;1&quot;: {
+<span class="nc" id="L115">				Command createCharacterCmd = new CreateCharacterCommand(gameController);</span>
+<span class="nc" id="L116">				commandExecuter.executeCommand(createCharacterCmd);</span>
+<span class="nc" id="L117">				CommandResult result = createCharacterCmd.getCommandResult();</span>
+
+<span class="nc bnc" id="L119" title="All 2 branches missed.">				if (CommandStatus.Success == result.getCommandStatus()) {</span>
+<span class="nc" id="L120">					System.out.println(result.getMessage());</span>
+<span class="nc" id="L121">					System.out.println(DASHED_LINE);</span>
+<span class="nc" id="L122">					System.out.println(&quot;Press Enter to continue....&quot;);</span>
+<span class="nc" id="L123">					ENTERSCANNER.nextLine();</span>
+<span class="nc" id="L124">					displayGameMenu();</span>
+				} else {
+<span class="nc" id="L126">					System.out.println(result.getMessage());</span>
+				}
+
+<span class="nc" id="L129">				break;</span>
+			}
+			case &quot;2&quot;: {
+<span class="nc" id="L132">				goBack = true;</span>
+<span class="nc" id="L133">				break;</span>
+			}
+
+			default: {
+<span class="nc" id="L137">				System.out.println(&quot;Please choose valid option..&quot;);</span>
+			}
+
+			}
+
+<span class="nc bnc" id="L142" title="All 2 branches missed.">		} while (goBack == false);</span>
+
+<span class="nc" id="L144">	}</span>
+
+	private void displayGameMenu() {
+
+<span class="nc" id="L148">		boolean goToMainMenu = false;</span>
+
+		do {
+
+<span class="nc" id="L152">			MenuController.renderMenuItems(MenuController.gameMenuItems);</span>
+<span class="nc" id="L153">			String userAction = USERINPUT.nextLine();</span>
+
+<span class="nc bnc" id="L155" title="All 18 branches missed.">			switch (userAction) {</span>
+
+			case &quot;1&quot;: {
+<span class="nc" id="L158">				System.out.println(&quot;************** Meeting Mission Master ******************&quot;);</span>
+<span class="nc" id="L159">				String dialogs = gameController.createExploreAreaDialogs();</span>
+<span class="nc" id="L160">				System.out.println(dialogs);</span>
+<span class="nc" id="L161">				System.out.println(DASHED_LINE);</span>
+<span class="nc" id="L162">				System.out.println(&quot;Press Enter to continue...&quot;);</span>
+<span class="nc" id="L163">				ENTERSCANNER.nextLine();</span>
+<span class="nc" id="L164">				break;</span>
+			}
+
+			case &quot;2&quot;: {
+<span class="nc" id="L168">				displayMissionMenuItems();</span>
+<span class="nc" id="L169">				break;</span>
+			}
+
+			case &quot;3&quot;: {
+				// Save Game state
+<span class="nc" id="L174">				printSingleCharacterWithDelay(&quot;Saving Game state........&quot;, 30);</span>
+<span class="nc" id="L175">				Command saveGameStateCmd = new SaveGameStateCommand(gameController);</span>
+<span class="nc" id="L176">				commandExecuter.executeCommand(saveGameStateCmd);</span>
+<span class="nc" id="L177">				System.out.println(saveGameStateCmd.getCommandResult().getMessage());</span>
+<span class="nc" id="L178">				System.out.println(DASHED_LINE);</span>
+<span class="nc" id="L179">				break;</span>
+			}
+
+			case &quot;4&quot;: {
+
+<span class="nc" id="L184">				goToMainMenu = true;</span>
+<span class="nc" id="L185">				break;</span>
+			}
+			default: {
+<span class="nc" id="L188">				System.out.println(&quot;Please choose valid option..&quot;);</span>
+			}
+			}
+
+<span class="nc bnc" id="L192" title="All 2 branches missed.">		} while (goToMainMenu == false);</span>
+
+<span class="nc" id="L194">	}</span>
+
+	private void displayMissionMenuItems() {
+
+<span class="nc" id="L198">		boolean goBack = false;</span>
+
+		do {
+
+<span class="nc" id="L202">			System.out.println(DASHED_LINE);</span>
+<span class="nc" id="L203">			System.out.println(&quot;Game Level : &quot; + gameController.getGameLevel().toString());</span>
+<span class="nc" id="L204">			String message = &quot;You are facing North &quot;;</span>
+<span class="nc" id="L205">			System.out.println(message);</span>
+
+<span class="nc" id="L207">			MenuController.renderMenuItems(MenuController.missionMenuItems);</span>
+<span class="nc" id="L208">			String userAction = USERINPUT.nextLine();</span>
+
+<span class="nc bnc" id="L210" title="All 18 branches missed.">			switch (userAction) {</span>
+
+			case &quot;1&quot;: {
+
+<span class="nc" id="L214">				StringBuilder dialogBuilder = new StringBuilder(&quot;Hello &quot;).append(gameController.getMainCharacterName())</span>
+<span class="nc" id="L215">						.append(&quot;\nWelcome to Weapon Factory.&quot;).append(&quot;\nYou can see only unlocked weapons.&quot;);</span>
+<span class="nc" id="L216">				printSingleCharacterWithDelay(dialogBuilder.toString(), 50);</span>
+
+<span class="nc bnc" id="L218" title="All 2 branches missed.">				if (gameController.getUnlockedWeapons().isEmpty()) {</span>
+<span class="nc" id="L219">					printSingleCharacterWithDelay(&quot;Opps Sorry... You have not unlocked any weapon yet... &quot;, 20);</span>
+<span class="nc" id="L220">					System.out.println(&quot;Press Enter to go Back&quot;);</span>
+
+<span class="nc" id="L222">					ENTERSCANNER.nextLine();</span>
+				} else {
+<span class="nc" id="L224">					System.out.println(</span>
+							&quot;You unlocked new weapons, do you want to take it? If yes, press 'Y' otherwise 'N'  &quot;);
+
+<span class="nc bnc" id="L227" title="All 2 branches missed.">					for (Weapon weapon : gameController.getUnlockedWeapons()) {</span>
+<span class="nc" id="L228">						System.out.println(&quot;[ &quot; + weapon.getWeaponName() + &quot; ]&quot;);</span>
+<span class="nc" id="L229">					}</span>
+
+<span class="nc" id="L231">					String yesOrNo = USERINPUT.nextLine();</span>
+
+<span class="nc bnc" id="L233" title="All 9 branches missed.">					switch (yesOrNo) {</span>
+					case &quot;Y&quot;: {
+<span class="nc" id="L235">						Command replaceWeaponCmd = new ReplaceWeaponCommand(gameController);</span>
+<span class="nc" id="L236">						commandExecuter.executeCommand(replaceWeaponCmd);</span>
+
+<span class="nc bnc" id="L238" title="All 2 branches missed.">						if (CommandStatus.Success == replaceWeaponCmd.getCommandResult().getCommandStatus()) {</span>
+<span class="nc" id="L239">							System.out.println(replaceWeaponCmd.getCommandResult().getMessage());</span>
+						}
+<span class="nc" id="L241">						System.out.println(&quot;Press Enter to continue....&quot;);</span>
+<span class="nc" id="L242">						ENTERSCANNER.nextLine();</span>
+<span class="nc" id="L243">						break;</span>
+					}
+					case &quot;N&quot;: {
+						break;
+					}
+
+					}
+
+				}
+
+<span class="nc" id="L253">				break;</span>
+			}
+
+			case &quot;2&quot;: {
+
+<span class="nc" id="L258">				StringBuilder dialogBuilder = new StringBuilder(&quot;Hello : &quot;)</span>
+<span class="nc" id="L259">						.append(gameController.getMainCharacterName()).append(&quot;\nWelcome to Elixir station.&quot;);</span>
+<span class="nc" id="L260">				printSingleCharacterWithDelay(dialogBuilder.toString(), 50);</span>
+<span class="nc" id="L261">				String result = gameController.searchHealthBoostingElixir();</span>
+<span class="nc" id="L262">				System.out.println(result);</span>
+<span class="nc" id="L263">				System.out.println(&quot;Press Enter to go Back&quot;);</span>
+<span class="nc" id="L264">				ENTERSCANNER.nextLine();</span>
+<span class="nc" id="L265">				break;</span>
+			}
+
+			case &quot;3&quot;: {
+
+<span class="nc" id="L270">				StringBuilder dialogBuilder = new StringBuilder(&quot;You Entered in Crime city..&quot;);</span>
+<span class="nc" id="L271">				System.out.println(dialogBuilder.toString());</span>
+<span class="nc" id="L272">				System.out.println(DASHED_LINE);</span>
+
+<span class="nc" id="L274">				System.out.println(&quot;You Encounter Goblin.&quot;);</span>
+<span class="nc" id="L275">				Command createEnemyCmd = new CreateEnemyCommand(gameController);</span>
+<span class="nc" id="L276">				commandExecuter.executeCommand(createEnemyCmd);</span>
+<span class="nc" id="L277">				System.out.println(gameController.getEnemyInformation());</span>
+<span class="nc" id="L278">				System.out.println(DASHED_LINE);</span>
+<span class="nc" id="L279">				displayAttackOption();</span>
+<span class="nc" id="L280">				break;</span>
+
+			}
+
+			case &quot;4&quot;: {
+<span class="nc" id="L285">				goBack = true;</span>
+<span class="nc" id="L286">				displayGameMenu();</span>
+<span class="nc" id="L287">				break;</span>
+
+			}
+
+			default: {
+<span class="nc" id="L292">				System.out.println(&quot;Please choose valid option..&quot;);</span>
+			}
+
+			}
+
+<span class="nc bnc" id="L297" title="All 2 branches missed.">		} while (goBack == false);</span>
+
+<span class="nc" id="L299">	}</span>
+
+	private void displayAttackOption() {
+
+<span class="nc" id="L303">		boolean goBack = false;</span>
+
+		do {
+
+<span class="nc" id="L307">			MenuController.renderMenuItems(MenuController.fightMenuItems);</span>
+<span class="nc" id="L308">			String userAction = USERINPUT.nextLine();</span>
+
+<span class="nc bnc" id="L310" title="All 10 branches missed.">			switch (userAction) {</span>
+
+			case &quot;1&quot;: {
+				// Attack
+<span class="nc" id="L314">				Command attackCmd = new AttackCommand(gameController);</span>
+<span class="nc" id="L315">				commandExecuter.executeCommand(attackCmd);</span>
+<span class="nc" id="L316">				System.out.println(attackCmd.getCommandResult().getMessage());</span>
+
+<span class="nc bnc" id="L318" title="All 4 branches missed.">				if (gameController.isEnemyDead() &amp;&amp; gameController.isPlayerDead()) {</span>
+<span class="nc" id="L319">					System.out.println(&quot;#####################################&quot;);</span>
+<span class="nc" id="L320">					printSingleCharacterWithDelay(&quot;.........MISSION FAILED........ &quot;, 10);</span>
+<span class="nc" id="L321">					System.out.println(&quot;#####################################&quot;);</span>
+<span class="nc" id="L322">					goBack = true;</span>
+<span class="nc" id="L323">					displayMainMenu();</span>
+
+<span class="nc bnc" id="L325" title="All 2 branches missed.">				} else if (gameController.isPlayerDead()) {</span>
+					// Captain died
+<span class="nc" id="L327">					System.out.println(&quot;#####################################&quot;);</span>
+
+<span class="nc" id="L329">					printSingleCharacterWithDelay(&quot;.........MISSION FAILED........&quot;, 50);</span>
+<span class="nc" id="L330">					System.out.println(&quot;\nPress enter to start new game&quot;);</span>
+<span class="nc" id="L331">					ENTERSCANNER.nextLine();</span>
+<span class="nc" id="L332">					goBack = true;</span>
+<span class="nc" id="L333">					displayMainMenu();</span>
+<span class="nc bnc" id="L334" title="All 2 branches missed.">				} else if (gameController.isEnemyDead()) {</span>
+					// Enemy killed
+<span class="nc" id="L336">					System.out.println(&quot;*********************************************&quot;);</span>
+<span class="nc" id="L337">					printSingleCharacterWithDelay(&quot;Good Job, You killed Goblin and save civilians life.&quot;, 10);</span>
+<span class="nc" id="L338">					System.out.println(&quot;Congratulations : You unlocked new weapon &quot;);</span>
+<span class="nc" id="L339">					System.out.println(gameController.getMainCharacterInformation());</span>
+<span class="nc" id="L340">					System.out.println(&quot; Game Level  : &quot; + gameController.getGameLevel());</span>
+<span class="nc" id="L341">					System.out.println(&quot;Press enter to go to Continue &quot;);</span>
+<span class="nc" id="L342">					ENTERSCANNER.nextLine();</span>
+
+<span class="nc" id="L344">					System.out.println(DASHED_LINE);</span>
+
+<span class="nc" id="L346">					System.out.println(&quot;You Encounter Goblin.&quot;);</span>
+<span class="nc" id="L347">					Command createEnemyCmd = new CreateEnemyCommand(gameController);</span>
+<span class="nc" id="L348">					commandExecuter.executeCommand(createEnemyCmd);</span>
+<span class="nc" id="L349">					System.out.println(gameController.getEnemyInformation());</span>
+<span class="nc" id="L350">					System.out.println(DASHED_LINE);</span>
+<span class="nc" id="L351">					goBack = true;</span>
+<span class="nc" id="L352">					displayAttackOption();</span>
+
+<span class="nc" id="L354">				} else {</span>
+<span class="nc" id="L355">					System.out.println(DASHED_LINE);</span>
+<span class="nc" id="L356">					System.out.println(gameController.getMainCharacterName() + &quot;'s Health : &quot;</span>
+<span class="nc" id="L357">							+ gameController.getMainCharacterHealth());</span>
+<span class="nc" id="L358">					System.out</span>
+<span class="nc" id="L359">							.println(gameController.getEnemyName() + &quot;'s Health : &quot; + gameController.getEnemyHealth());</span>
+<span class="nc" id="L360">					System.out.println(DASHED_LINE);</span>
+				}
+
+<span class="nc" id="L363">				break;</span>
+
+			}
+			case &quot;2&quot;: {
+				// go Back
+<span class="nc" id="L368">				goBack = true;</span>
+<span class="nc" id="L369">				break;</span>
+			}
+			default: {
+<span class="nc" id="L372">				System.out.println(&quot;Please choose valid option..&quot;);</span>
+			}
+			}
+
+<span class="nc bnc" id="L376" title="All 2 branches missed.">		} while (goBack == false);</span>
+
+<span class="nc" id="L378">	}</span>
+
+	private void printSingleCharacterWithDelay(String message, long delayInMillisec) {
+<span class="nc" id="L381">		System.out.println(&quot;\n&quot;);</span>
+<span class="nc" id="L382">		char charArray[] = message.toCharArray();</span>
+		try {
+<span class="nc bnc" id="L384" title="All 2 branches missed.">			for (char c : charArray) {</span>
+<span class="nc" id="L385">				Thread.sleep(delayInMillisec);</span>
+<span class="nc" id="L386">				System.out.print(c);</span>
+			}
+<span class="nc" id="L388">		} catch (Exception e) {</span>
+<span class="nc" id="L389">			e.printStackTrace();</span>
+			;
+<span class="nc" id="L391">		}</span>
+
+<span class="nc" id="L393">	}</span>
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.eclemma.org/jacoco">JaCoCo</a> 0.7.5.201505241946</span></div></body></html>

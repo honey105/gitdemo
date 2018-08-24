@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../.resources/report.css" type="text/css"/><link rel="shortcut icon" href="../.resources/report.gif" type="image/gif"/><title>Character.java</title><link rel="stylesheet" href="../.resources/prettify.css" type="text/css"/><script type="text/javascript" src="../.resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../.sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Warrior</a> &gt; <a href="index.source.html" class="el_package">org.com.character</a> &gt; <span class="el_source">Character.java</span></div><h1>Character.java</h1><pre class="source lang-java linenums">package org.com.character;
+
+import java.io.Serializable;
+
+import org.com.weapon.Weapon;
+
+<span class="fc" id="L7">public abstract class Character implements Serializable {</span>
+
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+	private int health;
+	private boolean protectionJacket;
+	private int attackingMinPower;
+	private int attackingMaxPower;
+	private Weapon weapon;
+	private String name;
+	private int experience;
+	private CharacterStatus characterStatus;
+
+	public void initilize() {
+<span class="fc" id="L23">		this.health = 100;</span>
+<span class="fc" id="L24">		this.experience = 1;</span>
+<span class="fc" id="L25">		characterStatus = CharacterStatus.live;</span>
+<span class="fc" id="L26">	}</span>
+
+	public void healthImpacted(int damageEffect) {
+<span class="nc" id="L29">		this.health = this.health - damageEffect;</span>
+<span class="nc" id="L30">	}</span>
+
+	public abstract CharacterType getCharacterType();
+
+	public int getHealth() {
+<span class="fc" id="L35">		return health;</span>
+	}
+
+	public void setHealth(int health) {
+<span class="fc" id="L39">		this.health = health;</span>
+<span class="fc" id="L40">	}</span>
+
+	public boolean isProtectionJacket() {
+<span class="nc" id="L43">		return protectionJacket;</span>
+	}
+
+	public void setProtectionJacket(boolean protectionJacket) {
+<span class="nc" id="L47">		this.protectionJacket = protectionJacket;</span>
+<span class="nc" id="L48">	}</span>
+
+	public int getAttackingMinPower() {
+<span class="fc" id="L51">		return attackingMinPower;</span>
+	}
+
+	public void setAttackingMinPower(int attackingMinPower) {
+<span class="fc" id="L55">		this.attackingMinPower = attackingMinPower;</span>
+<span class="fc" id="L56">	}</span>
+
+	public int getAttackingMaxPower() {
+<span class="fc" id="L59">		return attackingMaxPower;</span>
+	}
+
+	public void setAttackingMaxPower(int attackingMaxPower) {
+<span class="fc" id="L63">		this.attackingMaxPower = attackingMaxPower;</span>
+<span class="fc" id="L64">	}</span>
+
+	public Weapon getWeapon() {
+<span class="fc" id="L67">		return weapon;</span>
+	}
+
+	public void setWeapon(Weapon weapon) {
+<span class="fc" id="L71">		this.weapon = weapon;</span>
+<span class="fc" id="L72">	}</span>
+
+	public String getName() {
+<span class="fc" id="L75">		return name;</span>
+	}
+
+	public void setName(String name) {
+<span class="fc" id="L79">		this.name = name;</span>
+<span class="fc" id="L80">	}</span>
+
+	public int getExperience() {
+<span class="fc" id="L83">		return experience;</span>
+	}
+
+	public void setExperience(int experience) {
+<span class="fc" id="L87">		this.experience = experience;</span>
+<span class="fc" id="L88">	}</span>
+
+	public CharacterStatus getCharacterStatus() {
+<span class="nc" id="L91">		return characterStatus;</span>
+	}
+
+	public void setCharacterStatus(CharacterStatus characterStatus) {
+<span class="fc" id="L95">		this.characterStatus = characterStatus;</span>
+<span class="fc" id="L96">	}</span>
+
+	public boolean isDead() {
+<span class="fc bfc" id="L99" title="All 2 branches covered.">		return CharacterStatus.dead == this.characterStatus;</span>
+	}
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.eclemma.org/jacoco">JaCoCo</a> 0.7.5.201505241946</span></div></body></html>

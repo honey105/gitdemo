@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../.resources/report.css" type="text/css"/><link rel="shortcut icon" href="../.resources/report.gif" type="image/gif"/><title>MenuController.java</title><link rel="stylesheet" href="../.resources/prettify.css" type="text/css"/><script type="text/javascript" src="../.resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../.sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Warrior</a> &gt; <a href="index.source.html" class="el_package">org.com.game.controller</a> &gt; <span class="el_source">MenuController.java</span></div><h1>MenuController.java</h1><pre class="source lang-java linenums">package org.com.game.controller;
+
+<span class="nc" id="L3">public class MenuController {</span>
+
+<span class="fc" id="L5">	public static String mainMenuItems[] = { &quot;\t 1. Launch New Game &quot;, &quot;\t 2. Load Existing Game &quot;,</span>
+			&quot;\t 3. Don't Want to Play &quot; };
+
+<span class="fc" id="L8">	public static String gameMenuItems[] = { &quot;\t 1. Meet Mission Master &quot;,</span>
+			&quot;\t 2. Start Mission&quot;, &quot;\t 3. Save Game State &quot;,
+			&quot;\t 4. Go Back &quot;};
+
+<span class="fc" id="L12">	public static String createCharacterMenuItems[] = { &quot;\t 1. Create Warrior &quot;, &quot;\t 2. &lt;&lt; Go Back  &quot;};</span>
+	
+<span class="fc" id="L14">	public static String fightMenuItems [] = {&quot;\t 1. Attack &quot;, &quot;\t 2. Back &quot;};</span>
+	
+<span class="fc" id="L16">	public static String missionMenuItems [] = {&quot;\t 1. East &quot;, &quot;\t 2. West &quot;, &quot;\t 3. North &quot;, &quot;\t 4. Back&quot;};</span>
+
+	public static void renderMenuItems(String menuItems[]) {
+<span class="fc bfc" id="L19" title="All 2 branches covered.">		for (String menuItem : menuItems) {</span>
+<span class="fc" id="L20">			System.out.println();</span>
+<span class="fc" id="L21">			System.out.println(menuItem);</span>
+		}
+<span class="fc" id="L23">		System.out.println();</span>
+<span class="fc" id="L24">		System.out.println(&quot;What do you want to do ? &quot;);</span>
+<span class="fc" id="L25">	}</span>
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.eclemma.org/jacoco">JaCoCo</a> 0.7.5.201505241946</span></div></body></html>
